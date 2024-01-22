@@ -12,7 +12,7 @@ public class SimpleArrayList implements SimpleList {
     private static final String[] EMPTY_ELEMENTDATA = {};
 
 
-    String[] elementData;
+    private String[] elementData;
     private int size;
 
 
@@ -28,12 +28,16 @@ public class SimpleArrayList implements SimpleList {
 
         if (initialCapacity == 0) {
             this.elementData = EMPTY_ELEMENTDATA;
+            this.size = 0;
             return;
         }
 
         this.elementData = new String[initialCapacity];
     }
 
+    private String[] grow() {
+        return grow(size + 1);
+    }
 
     private String[] grow(int minCapacity) {
         int newCapacity = calculateNewCapacity(minCapacity);
@@ -41,12 +45,12 @@ public class SimpleArrayList implements SimpleList {
         return elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
-    private String[] grow() {
-        return grow(size + 1);
-    }
-
 
     private int calculateNewCapacity(int minCapacity) {
+        if (minCapacity < 0) {
+            throw new OutOfMemoryError();
+        }
+
         int oldCapacity = elementData.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1); // 비트 시프트를 통해 50% 증가
 
@@ -58,9 +62,7 @@ public class SimpleArrayList implements SimpleList {
     }
 
     private int adjustCapacity(int minCapacity) {
-        if (minCapacity < 0) {
-            throw new OutOfMemoryError();
-        }
+
         if (elementData == EMPTY_ELEMENTDATA) {
             return Math.max(DEFAULT_CAPACITY, minCapacity);
         }
@@ -75,10 +77,6 @@ public class SimpleArrayList implements SimpleList {
     }
 
     private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) {
-            throw new OutOfMemoryError();
-        }
-
         if (minCapacity > MAX_ARRAY_SIZE) {
             return Integer.MAX_VALUE;
         }
